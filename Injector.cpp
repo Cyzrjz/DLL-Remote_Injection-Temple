@@ -88,7 +88,7 @@ BOOL inject(DWORD dwPid,const CHAR dllName[])
 		return 0;
 	}
 
-	//获取线程句柄
+	//创建远程线程进行DLL注入
 	hRemoteThread = CreateRemoteThread(
 		hProcess,
 		NULL,
