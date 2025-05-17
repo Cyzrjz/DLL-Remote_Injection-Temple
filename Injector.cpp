@@ -3,16 +3,16 @@
 #include <tlhelp32.h>
 #include <string>
 #define PROCESS_NAME   L"TargetApp.exe"
-#define DLL_NAME	   "AntiCapture.dll"
+#define DLL_NAME	"AntiCapture.dll"
 
 VOID ShowError(const char* err)
 {
-	printf("%s Ê§°Ü£º%u", err, GetLastError());
+	printf("%s å¤±è´¥ï¼š%u", err, GetLastError());
 }
 
 DWORD GetPid(const WCHAR* pProName) 
 {
-	//´´½¨ÏµÍ³½ø³Ì¿ìÕÕ
+	//åˆ›å»ºç³»ç»Ÿè¿›ç¨‹å¿«ç…§
 	HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);
 
 	if (hSnap == INVALID_HANDLE_VALUE)
@@ -28,10 +28,10 @@ DWORD GetPid(const WCHAR* pProName)
 	{
 		do 
 		{
-			//ºöÂÔ´óĞ¡Ğ´±È½Ï
+			//å¿½ç•¥å¤§å°å†™æ¯”è¾ƒ
 			if (_wcsicmp(pe.szExeFile,pProName) == 0)
 			{
-				printf("PIDÎª%d\n", pe.th32ProcessID);
+				printf("PIDä¸º%d\n", pe.th32ProcessID);
 				return pe.th32ProcessID;
 			}
 		} while (Process32Next(hSnap, &pe));
@@ -48,7 +48,7 @@ BOOL inject(DWORD dwPid,const CHAR dllName[])
 	FARPROC hLoadLibraryA = NULL;
 	HANDLE hRemoteThread = NULL;
 
-	//´ò¿ª×¢Èë½ø³Ì£¬»ñÈ¡½ø³Ì¾ä±ú
+	//æ‰“å¼€æ³¨å…¥è¿›ç¨‹ï¼Œè·å–è¿›ç¨‹å¥æŸ„
 	hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPid);
 	if (hProcess == NULL)
 	{
@@ -56,7 +56,7 @@ BOOL inject(DWORD dwPid,const CHAR dllName[])
 		return 0;
 	}
 
-	//ÔÚ×¢Èë½ø³ÌÖĞÉêÇë¿Õ¼ä
+	//åœ¨æ³¨å…¥è¿›ç¨‹ä¸­ç”³è¯·ç©ºé—´
 	dwSize = strlen(dllName) + 1;
 	DLL_address = VirtualAllocEx(hProcess, NULL, dwSize, MEM_COMMIT, PAGE_READWRITE);
 	if (DLL_address == NULL)
@@ -65,14 +65,14 @@ BOOL inject(DWORD dwPid,const CHAR dllName[])
 		return 0;
 	}
 
-	//½«DLLÂ·¾¶Ğ´Èë½ø³Ì
+	//å°†DLLè·¯å¾„å†™å…¥è¿›ç¨‹
 	if (!WriteProcessMemory(hProcess, DLL_address, dllName, dwSize, NULL))
 	{
 		ShowError("WriteProcessMemory");
 		return 0;
 	}
 
-	//»ñÈ¡Ä£¿éµÄµØÖ·
+	//è·å–æ¨¡å—çš„åœ°å€
 	hKernel32 = GetModuleHandleA("kernel32.dll");
 	if (hKernel32 == NULL)
 	{
@@ -80,7 +80,7 @@ BOOL inject(DWORD dwPid,const CHAR dllName[])
 		return 0;
 	}
 
-	//»ñÈ¡LoadLibraryAº¯ÊıµØÖ·
+	//è·å–LoadLibraryAå‡½æ•°åœ°å€
 	hLoadLibraryA = GetProcAddress(hKernel32,"LoadLibraryA");
 	if (hLoadLibraryA == NULL)
 	{
@@ -88,7 +88,7 @@ BOOL inject(DWORD dwPid,const CHAR dllName[])
 		return 0;
 	}
 
-	//»ñÈ¡Ïß³Ì¾ä±ú
+	//è·å–çº¿ç¨‹å¥æŸ„
 	hRemoteThread = CreateRemoteThread(
 		hProcess,
 		NULL,
@@ -117,13 +117,13 @@ int main()
 	DWORD pid = GetPid(PROCESS_NAME);
 	if (pid == 0)
 	{
-		printf("»ñÈ¡PIDÊ§°Ü\n");
+		printf("è·å–PIDå¤±è´¥\n");
 		system("pause");
 		return 0;
 	}
 	if (inject(pid, DLL_NAME))
 	{
-		printf("×¢Èë³É¹¦\n");
+		printf("æ³¨å…¥æˆåŠŸ\n");
 	}
 	return 0;
 }
