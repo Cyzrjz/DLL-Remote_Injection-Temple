@@ -3,7 +3,7 @@
 #include <tlhelp32.h>
 #include <string>
 #define PROCESS_NAME   L"TargetApp.exe"
-#define DLL_NAME	"AntiCapture.dll"
+#define DLL_NAME	"AntiCapture.dll" //这是相对于目标程序的dll路径
 
 VOID ShowError(const char* err)
 {
